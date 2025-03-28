@@ -1,0 +1,22 @@
+services:
+  contact-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8080"
+    environment:
+      - PORT=${{ shared.PORT }}
+      - SPRING_DATASOURCE_URL=${{ shared.CONTACT_DB_URL }}
+      - SPRING_DATASOURCE_USERNAME=${{ shared.CONTACT_DB_USERNAME }}
+      - SPRING_DATASOURCE_PASSWORD=${{ shared.CONTACT_DB_PASSWORD }}
+      - KAFKA_BOOTSTRAP_SERVERS=${{ shared.KAFKA_BOOTSTRAP_SERVERS }}
+      - APP_EMAIL=${{ shared.APP_EMAIL }}
+      - MAIL_PASSWORD=${{ shared.MAIL_PASSWORD }}
+      - MAIL_USERNAME=${{ shared.MAIL_USERNAME }}
+      - MAIL_REGISTER_SUBJECT=${{ shared.MAIL_REGISTER_SUBJECT }}
+      - MAIL_REGISTER_CONFIRMATION_LINK=${{ shared.MAIL_REGISTER_CONFIRMATION_LINK }}
+      - RESET_PASSWORD_LINK=${{ shared.RESET_PASSWORD_LINK }}
+      - RESET_PASSWORD_SUBJECT=${{ shared.RESET_PASSWORD_SUBJECT }}
+      - MAIL_SUPPORT_SUBJECT=${{ shared.MAIL_SUPPORT_SUBJECT }}
+    restart: always
