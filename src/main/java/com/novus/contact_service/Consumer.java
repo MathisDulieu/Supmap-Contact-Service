@@ -1,8 +1,8 @@
 package com.novus.contact_service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.novus.contact_service.services.SendEmailService;
 import com.novus.contact_service.services.NewsletterService;
+import com.novus.contact_service.services.SendEmailService;
 import com.novus.shared_models.common.Kafka.KafkaMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

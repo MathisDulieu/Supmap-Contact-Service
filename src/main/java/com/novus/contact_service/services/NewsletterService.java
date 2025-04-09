@@ -3,6 +3,7 @@ package com.novus.contact_service.services;
 import com.novus.contact_service.UuidProvider;
 import com.novus.contact_service.dao.NewsletterDaoUtils;
 import com.novus.contact_service.dao.NewsletterSubscriptionDaoUtils;
+import com.novus.contact_service.dao.UserDaoUtils;
 import com.novus.contact_service.utils.LogUtils;
 import com.novus.shared_models.common.Kafka.KafkaMessage;
 import com.novus.shared_models.common.Log.HttpMethod;
@@ -10,6 +11,7 @@ import com.novus.shared_models.common.Log.LogLevel;
 import com.novus.shared_models.common.Newsletter.Newsletter;
 import com.novus.shared_models.common.Newsletter.NewsletterType;
 import com.novus.shared_models.common.NewsletterSubscription.NewsletterSubscription;
+import com.novus.shared_models.common.User.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,7 @@ public class NewsletterService {
     private final EmailService emailService;
     private final LogUtils logUtils;
     private final UuidProvider uuidProvider;
+    private final UserDaoUtils userDaoUtils;
 
     public void processSubscription(KafkaMessage kafkaMessage) {
         Map<String, String> request = kafkaMessage.getRequest();
@@ -165,6 +168,11 @@ public class NewsletterService {
 
             newsletterDaoUtils.save(newsletter);
 
+            User user = kafkaMessage.getAuthenticatedUser();
+            user.setLastActivityDate(new Date());
+
+            userDaoUtils.save(user);
+
             List<NewsletterSubscription> activeSubscriptions = newsletterSubscriptionDaoUtils.findAllActiveSubscriptions();
 
             if (activeSubscriptions.isEmpty()) {
@@ -211,8 +219,6 @@ public class NewsletterService {
                     null,
                     userId
             );
-
-            log.info("Newsletter sent successfully to {} subscribers ({} failed)", successCount, errorCount);
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);

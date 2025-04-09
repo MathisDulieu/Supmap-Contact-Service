@@ -3,52 +3,47 @@
     {
       "name": "supmap.properties.app-email",
       "type": "java.lang.String",
-      "description": "Description for supmap.properties.app-email."
+      "description": "The email address used by the contact service to send friend requests, connection notifications, and social interaction updates to users."
     },
     {
       "name": "supmap.properties.database-name",
       "type": "java.lang.String",
-      "description": "Description for supmap.properties.database-name."
+      "description": "The name of the MongoDB database used by the contact service to store user relationships, friend connections, and community interactions."
     },
     {
       "name": "supmap.properties.elasticsearch-password",
       "type": "java.lang.String",
-      "description": "Description for supmap.properties.elasticsearch-password."
+      "description": "Password for authenticating with the Elasticsearch instance used for indexing and searching user social connections and interactions."
     },
     {
       "name": "supmap.properties.elasticsearch-url",
       "type": "java.lang.String",
-      "description": "Description for supmap.properties.elasticsearch-url."
+      "description": "URL endpoint for the Elasticsearch service used for efficient querying of user relationships and contact networks."
     },
     {
       "name": "supmap.properties.elasticsearch-username",
       "type": "java.lang.String",
-      "description": "Description for supmap.properties.elasticsearch-username."
-    },
-    {
-      "name": "supmap.properties.jwt-secret",
-      "type": "java.lang.String",
-      "description": "Description for supmap.properties.jwt-secret."
+      "description": "Username for authenticating with the Elasticsearch instance used for user relationships and contact data indexing."
     },
     {
       "name": "supmap.properties.kafka-bootstrap-servers",
       "type": "java.lang.String",
-      "description": "Description for supmap.properties.kafka-bootstrap-servers."
+      "description": "Comma-separated list of host:port pairs for establishing the initial connection to the Kafka cluster for contact and social interaction events."
     },
     {
       "name": "supmap.properties.mail-modified-username",
       "type": "java.lang.String",
-      "description": "Description for supmap.properties.mail-modified-username."
+      "description": "Template or subject line used in emails sent to users when their contact's username has been modified."
     },
     {
       "name": "supmap.properties.mail-password",
       "type": "java.lang.String",
-      "description": "Description for supmap.properties.mail-password."
+      "description": "Password for the email account used by the application to send contact-related notifications and alerts to users."
     },
     {
       "name": "supmap.properties.mongo-uri",
       "type": "java.lang.String",
-      "description": "Description for supmap.properties.mongo-uri."
+      "description": "Connection string URI for the MongoDB database, including authentication credentials if required."
     }
   ]
 }

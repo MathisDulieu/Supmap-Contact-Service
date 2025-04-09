@@ -15,7 +15,6 @@ public class EnvConfiguration {
     private String elasticsearchPassword;
     private String elasticsearchUrl;
     private String elasticsearchUsername;
-    private String jwtSecret;
     private String kafkaBootstrapServers;
     private String mailPassword;
     private String mongoUri;
