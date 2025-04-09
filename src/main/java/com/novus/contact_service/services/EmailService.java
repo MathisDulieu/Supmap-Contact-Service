@@ -1,29 +1,57 @@
 package com.novus.contact_service.services;
 
-import com.novus.shared_models.common.Kafka.KafkaMessage;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.io.UnsupportedEncodingException;
 
-@Slf4j
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class EmailService {
 
-    public void processSupportEmail(KafkaMessage kafkaMessage) {
+    @Autowired
+    private JavaMailSender javaMailSender;
+
+    private static final String APP_EMAIL = System.getenv("APP_EMAIL");
+    private static final String MAIL_MODIFIED_USERNAME = System.getenv("MAIL_MODIFIED_USERNAME");
+
+    public void sendEmail(String to, String subject, String body) {
         try {
-            Map<String, String> request = kafkaMessage.getRequest();
-            String email = request.get("email");
-            String subject = request.get("subject");
-            String content = request.get("content");
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, "utf-8");
 
-            log.info("Processing support email request from: {}", email);
+            helper.setFrom(APP_EMAIL, MAIL_MODIFIED_USERNAME);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(body, true);
 
-            log.info("Support email successfully sent to team from: {}", email);
-        } catch (Exception e) {
-            log.error("Error processing support email: {}", e.getMessage(), e);
+            javaMailSender.send(mimeMessage);
+            log.info("Email sent successfully to " + to);
+        } catch (MailException | MessagingException e) {
+            log.error("Error while sending email: " + e.getMessage());
+            throw new RuntimeException("Error sending email: " + e.getMessage(), e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
+
+    public static String getEmailSignature() {
+        return "<br>"
+                + "<p>Best regards,<br>"
+                + "The SupMap Team.</p>"
+                + "<p>SupMap - Simplify your routes and projects.</p>"
+                + "<p>📞 Support: <a href=\"tel:+33614129625\">+33 6 14 12 96 25</a><br>"
+                + "📩 Email: <a href=\"mailto:supmap.application@gmail.com\">supmap.application@gmail.com</a><br>"
+                + "🌐 Website: <a href=\"https://supmap-application.com\">https://supmap-application.com</a><br>"
+                + "📱 Available on iOS and Android!</p>";
+    }
+
 }

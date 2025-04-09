@@ -1,7 +1,7 @@
 package com.novus.contact_service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.novus.contact_service.services.EmailService;
+import com.novus.contact_service.services.SendEmailService;
 import com.novus.contact_service.services.NewsletterService;
 import com.novus.shared_models.common.Kafka.KafkaMessage;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class Consumer {
 
-    private final EmailService emailService;
+    private final SendEmailService sendEmailService;
     private final NewsletterService newsletterService;
 
     @Autowired
@@ -52,7 +52,7 @@ public class Consumer {
 
         switch (operationKey) {
             case "sendSupportEmail":
-                emailService.processSupportEmail(kafkaMessage);
+                sendEmailService.processSupportEmail(kafkaMessage);
                 break;
             case "subscribeToNewsletter":
                 newsletterService.processSubscription(kafkaMessage);
