@@ -29,6 +29,7 @@ public class SendEmailService {
 
         try {
             content = buildSupportConfirmationEmail(subject, content);
+            subject = "Thanks for Contacting SupMap Support";
 
             emailService.sendEmail(email, subject, content);
 
