@@ -1,6 +1,7 @@
 package com.novus.contact_service.services;
 
 import com.novus.contact_service.UuidProvider;
+import com.novus.contact_service.configuration.DateConfiguration;
 import com.novus.contact_service.dao.NewsletterDaoUtils;
 import com.novus.contact_service.dao.NewsletterSubscriptionDaoUtils;
 import com.novus.contact_service.dao.UserDaoUtils;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +36,7 @@ public class NewsletterService {
     private final LogUtils logUtils;
     private final UuidProvider uuidProvider;
     private final UserDaoUtils userDaoUtils;
+    private final DateConfiguration dateConfiguration;
 
     public void processSubscription(KafkaMessage kafkaMessage) {
         Map<String, String> request = kafkaMessage.getRequest();
@@ -48,7 +49,7 @@ public class NewsletterService {
                     .email(email)
                     .userId(userId)
                     .isActive(true)
-                    .subscribedAt(new Date())
+                    .subscribedAt(dateConfiguration.newDate())
                     .build();
 
             newsletterSubscriptionDaoUtils.save(subscription);
@@ -59,7 +60,7 @@ public class NewsletterService {
                     kafkaMessage.getIpAddress(),
                     "User successfully subscribed to newsletter: " + email,
                     HttpMethod.POST,
-                    "/newsletter/subscribe",
+                    "/contact/subscribe-newsletter",
                     "contact-service",
                     null,
                     userId
@@ -76,7 +77,7 @@ public class NewsletterService {
                     kafkaMessage.getIpAddress(),
                     "Error processing newsletter subscription for: " + email + ", error: " + e.getMessage(),
                     HttpMethod.POST,
-                    "/newsletter/subscribe",
+                    "/contact/subscribe-newsletter",
                     "contact-service",
                     stackTrace,
                     userId
@@ -101,7 +102,7 @@ public class NewsletterService {
                         kafkaMessage.getIpAddress(),
                         "No active subscription found for email: " + email,
                         HttpMethod.POST,
-                        "/newsletter/unsubscribe",
+                        "/contact/unsubscribe-newsletter",
                         "contact-service",
                         null,
                         userId
@@ -112,7 +113,7 @@ public class NewsletterService {
             NewsletterSubscription newsletterSubscription = optionalNewsletterSubscription.get();
 
             newsletterSubscription.setActive(false);
-            newsletterSubscription.setUnsubscribedAt(new Date());
+            newsletterSubscription.setUnsubscribedAt(dateConfiguration.newDate());
             newsletterSubscription.setUnsubscribeReason(reason);
 
             newsletterSubscriptionDaoUtils.save(newsletterSubscription);
@@ -123,7 +124,7 @@ public class NewsletterService {
                     kafkaMessage.getIpAddress(),
                     "User successfully unsubscribed from newsletter: " + email,
                     HttpMethod.POST,
-                    "/newsletter/unsubscribe",
+                    "/contact/unsubscribe-newsletter",
                     "contact-service",
                     null,
                     userId
@@ -140,7 +141,7 @@ public class NewsletterService {
                     kafkaMessage.getIpAddress(),
                     "Error processing newsletter unsubscription for: " + email + ", error: " + e.getMessage(),
                     HttpMethod.POST,
-                    "/newsletter/unsubscribe",
+                    "/contact/unsubscribe-newsletter",
                     "contact-service",
                     stackTrace,
                     userId
@@ -162,14 +163,14 @@ public class NewsletterService {
                     .htmlContent(content)
                     .subject(subject)
                     .createdByUserId(userId)
-                    .sentDate(new Date())
+                    .sentDate(dateConfiguration.newDate())
                     .type(NewsletterType.GENERAL)
                     .build();
 
             newsletterDaoUtils.save(newsletter);
 
             User user = kafkaMessage.getAuthenticatedUser();
-            user.setLastActivityDate(new Date());
+            user.setLastActivityDate(dateConfiguration.newDate());
 
             userDaoUtils.save(user);
 
@@ -182,7 +183,7 @@ public class NewsletterService {
                         kafkaMessage.getIpAddress(),
                         "No active subscribers found to send newsletter",
                         HttpMethod.POST,
-                        "/newsletter/send",
+                        "/private/admin/contact/send-newsletter",
                         "contact-service",
                         null,
                         userId
@@ -198,7 +199,7 @@ public class NewsletterService {
                     sendEmailToSubscriber(subscription.getEmail(), subject, content);
 
                     subscription.setLastNewsletterSentId(newsletter.getId());
-                    subscription.setLastNewsletterSentDate(new Date());
+                    subscription.setLastNewsletterSentDate(dateConfiguration.newDate());
                     newsletterSubscriptionDaoUtils.save(subscription);
 
                     successCount++;
@@ -214,7 +215,7 @@ public class NewsletterService {
                     kafkaMessage.getIpAddress(),
                     String.format("Newsletter sent to %d subscribers (%d failed)", successCount, errorCount),
                     HttpMethod.POST,
-                    "/newsletter/send",
+                    "/private/admin/contact/send-newsletter",
                     "contact-service",
                     null,
                     userId
@@ -231,7 +232,7 @@ public class NewsletterService {
                     kafkaMessage.getIpAddress(),
                     "Error processing send newsletter: " + e.getMessage(),
                     HttpMethod.POST,
-                    "/newsletter/send",
+                    "/private/admin/contact/send-newsletter",
                     "contact-service",
                     stackTrace,
                     userId

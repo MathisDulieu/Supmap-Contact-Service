@@ -39,7 +39,7 @@ public class SendEmailService {
                     kafkaMessage.getIpAddress(),
                     "Support email successfully sent to team from: " + email,
                     HttpMethod.POST,
-                    "/contact/support",
+                    "/contact/send-support-email",
                     "contact-service",
                     null,
                     userId
@@ -56,7 +56,7 @@ public class SendEmailService {
                     kafkaMessage.getIpAddress(),
                     "Error processing support email from: " + email + ", error: " + e.getMessage(),
                     HttpMethod.POST,
-                    "/contact/support",
+                    "/contact/send-support-email",
                     "contact-service",
                     stackTrace,
                     userId
